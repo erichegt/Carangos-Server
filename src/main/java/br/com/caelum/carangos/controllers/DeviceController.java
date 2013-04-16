@@ -17,8 +17,8 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
 
-//import com.google.android.gcm.server.Message;
-//import com.google.android.gcm.server.MulticastResult;
+import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.MulticastResult;
 
 @Resource
 public class DeviceController {
@@ -62,34 +62,34 @@ public class DeviceController {
 	public void pingaNiMim() {
 		List<String> deviceIds = devices.listAllRegistrationIds();
 
-//		try {
-//			com.google.android.gcm.server.Sender sender = new com.google.android.gcm.server.Sender(
-//					Constantes.CGM_API_KEY);
-//			Message message = new Message.Builder().addData("message",
-//					"maroto!").build();
-//
-//			// MulticastResult mResult = sender.send(message, deviceIds, 5);
-//			// List<com.google.android.gcm.server.Result> results =
-//			// mResult.getResults();
-//
-//			MulticastResult resultis = sender.send(message, deviceIds, 5);
-//			for (com.google.android.gcm.server.Result result : resultis
-//					.getResults()) {
-//				if (result.getMessageId() != null) {
-//					String canonicalRegId = result.getCanonicalRegistrationId();
-//					log.info("CannocialId " +  canonicalRegId);
-//					deviceIds.add("CannocialId " +  canonicalRegId);
-//				} else {
-//					String error = result.getErrorCodeName();
-//					log.info("ERROR DO GCM " +  error);
-//					deviceIds.add("ERROR DO GCM " +  error);
-//				}
-//			}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			log.error("Zica no envio para devices: " + e.getMessage());
-//			deviceIds.add("ZICAAAA!" + e.getMessage());
-//		}
+		try {
+			com.google.android.gcm.server.Sender sender = new com.google.android.gcm.server.Sender(
+					Constantes.CGM_API_KEY);
+			Message message = new Message.Builder().addData("message",
+					"maroto!").build();
+
+			// MulticastResult mResult = sender.send(message, deviceIds, 5);
+			// List<com.google.android.gcm.server.Result> results =
+			// mResult.getResults();
+
+			MulticastResult resultis = sender.send(message, deviceIds, 5);
+			for (com.google.android.gcm.server.Result result : resultis
+					.getResults()) {
+				if (result.getMessageId() != null) {
+					String canonicalRegId = result.getCanonicalRegistrationId();
+					log.info("CannocialId " +  canonicalRegId);
+					deviceIds.add("CannocialId " +  canonicalRegId);
+				} else {
+					String error = result.getErrorCodeName();
+					log.info("ERROR DO GCM " +  error);
+					deviceIds.add("ERROR DO GCM " +  error);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			log.error("Zica no envio para devices: " + e.getMessage());
+			deviceIds.add("ZICAAAA!" + e.getMessage());
+		}
 
 		deviceIds.add("Se nessa casa tem goteira...");
 
