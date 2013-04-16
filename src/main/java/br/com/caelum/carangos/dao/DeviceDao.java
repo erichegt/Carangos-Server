@@ -2,7 +2,7 @@ package br.com.caelum.carangos.dao;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import org.hibernate.Session;
 
 import br.com.caelum.carangos.gcm.model.Device;
 import br.com.caelum.vraptor.ioc.Component;
@@ -10,41 +10,42 @@ import br.com.caelum.vraptor.ioc.Component;
 @Component
 public class DeviceDao {
 
-	private EntityManager em;
+	private Session session;
 
-	public DeviceDao(EntityManager em) {
-		this.em = em;
+	public DeviceDao(Session session) {
+		this.session = session;
 	}
 
 	public void save(Device device) {
-		em.persist(device);
+		session.save(device);
 	}
 
 	public Device find(String hash) {
-		return em.createQuery("from "+Device.class.getName()+ " where registrationId = :id",
-				Device.class).setParameter("id", hash)
-			.getSingleResult();
+		return (Device) session.createQuery("from "+Device.class.getName()+ " where registrationId = :id").setParameter("id", hash)
+			.uniqueResult();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<String> listAllRegistrationIds() {
-		return em.createNativeQuery("select d.registrationId from Device as d").getResultList();
+		return session.createSQLQuery("select d.registrationId from Device as d").list();
 //		return em.createQuery("select registrationId from "+ Device.class.getName(), String.class).getResultList();
 	}
 	
 	public boolean update(String oldHash, String newHash) {
-		em.getTransaction().begin();
+		session.beginTransaction();
 		Device found = find(oldHash);
 		
 		if (found != null) {
 			found.setRegistrationId(newHash);
 			return true;
 		}
-		em.getTransaction().commit();
+		session.getTransaction().commit();
 		return false;
 	}
 
 	public boolean contains(String registrationId) {
-		return em.createQuery("select count(d.id) from "+Device.class.getName()+ " as d where d.registrationId = :id",
-				Long.class).setParameter("id", registrationId).getSingleResult()>0;
+		Number quantidade =  (Number) session.createQuery("select count(d.id) from "+Device.class.getName()+ " as d where d.registrationId = :id").setParameter("id", registrationId).uniqueResult();
+		
+		return quantidade.intValue() >0;
 	}
 }
