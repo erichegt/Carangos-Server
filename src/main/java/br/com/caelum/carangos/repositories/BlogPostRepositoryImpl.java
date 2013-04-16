@@ -1,6 +1,6 @@
 package br.com.caelum.carangos.repositories;
 
-import javax.persistence.EntityManager;
+import org.hibernate.Session;
 
 import br.com.caelum.carangos.modelo.BlogPost;
 import br.com.caelum.vraptor.ioc.Component;
@@ -9,7 +9,7 @@ import br.com.caelum.vraptor.ioc.Component;
 public class BlogPostRepositoryImpl extends Repository<BlogPost, Long>
 		implements BlogPostRepository {
 
-	protected BlogPostRepositoryImpl(EntityManager em) {
-		super(em);
+	protected BlogPostRepositoryImpl(Session session) {
+		super(session);
 	}
 }

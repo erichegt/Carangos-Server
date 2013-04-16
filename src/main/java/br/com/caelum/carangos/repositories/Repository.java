@@ -4,19 +4,19 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import br.com.caelum.carangos.view.Pagina;
 
 public abstract class Repository<T, I extends Serializable> {
 	
-	protected final EntityManager entityManager;
 	protected final Class<T> clazz;
+	private Session session;
 
-	protected Repository(EntityManager entityManager) {
-		this.entityManager = entityManager;
+	protected Repository(Session session) {
 		
+		this.session = session;
 		@SuppressWarnings("unchecked")
 		Class<T> clazz = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
@@ -24,36 +24,38 @@ public abstract class Repository<T, I extends Serializable> {
 	}
 	
 	public T create(T entity) {
-		entityManager.persist(entity);
+		session.save(entity);
 		
 		return entity;
 	}
 	
 	public T update(T entity) {
-		return entityManager.merge(entity);
+		session.update(entity);
+		return entity;
 	}
 	
 	public void destroy(T entity) {
-		entityManager.remove(entity);
+		session.delete(entity);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public T find(I id) {
-		return entityManager.find(clazz, id);
+		return (T) session.get(clazz, id);
 	}
 	
 	public List<T> findAll() {
-		Query query = entityManager.createQuery("from " + clazz.getName());
+		Query query = session.createQuery("from " + clazz.getName());
 
 		@SuppressWarnings("unchecked")
-		List<T> resultList = query.getResultList();
+		List<T> resultList = query.list();
 
 		return resultList;
 	}
 	public List<T> find(Pagina pagina) {
-		Query query = entityManager.createQuery("from " + clazz.getName());
+		Query query = session.createQuery("from " + clazz.getName());
 		
 		@SuppressWarnings("unchecked")
-		List<T> resultList = query.setFirstResult(pagina.getInicio()).setMaxResults(pagina.getTamanho()).getResultList();
+		List<T> resultList = query.setFirstResult(pagina.getInicio()).setMaxResults(pagina.getTamanho()).list();
 		
 		return resultList;
 	}
